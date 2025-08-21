@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 interface Message {
   id: string;
@@ -23,7 +25,7 @@ const ChatInterface = () => {
   ]);
   const [inputValue, setInputValue] = useState("");
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (!inputValue.trim()) return;
 
     const userMessage: Message = {
@@ -34,18 +36,39 @@ const ChatInterface = () => {
     };
 
     setMessages(prev => [...prev, userMessage]);
+    const currentInput = inputValue;
     setInputValue("");
 
-    // Simulate bot response
-    setTimeout(() => {
+    try {
+      // Call the AI chat function
+      const { data, error } = await supabase.functions.invoke('chat-ai', {
+        body: { 
+          message: currentInput,
+          context: messages.slice(-5).map(m => `${m.isBot ? 'Assistant' : 'User'}: ${m.text}`).join('\n')
+        }
+      });
+
+      if (error) throw error;
+
       const botResponse: Message = {
         id: (Date.now() + 1).toString(),
-        text: "I understand you're looking for that. Let me search through our catalog and find the best options for you. Based on your request, here are some recommendations...",
+        text: data.response || "I'm sorry, I couldn't process your request right now. Please try again.",
         isBot: true,
         timestamp: new Date(),
       };
       setMessages(prev => [...prev, botResponse]);
-    }, 1000);
+    } catch (error) {
+      console.error('Error calling AI chat:', error);
+      toast.error('Failed to get AI response. Please try again.');
+      
+      const errorResponse: Message = {
+        id: (Date.now() + 1).toString(),
+        text: "I'm sorry, I'm having trouble connecting right now. Please try again in a moment.",
+        isBot: true,
+        timestamp: new Date(),
+      };
+      setMessages(prev => [...prev, errorResponse]);
+    }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {

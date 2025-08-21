@@ -1,8 +1,12 @@
 import { Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { useCart } from "@/hooks/useCart";
+import { useAuth } from "@/hooks/useAuth";
+import { useNavigate } from "react-router-dom";
 
 interface ProductCardProps {
+  id?: string;
   image: string;
   title: string;
   price: string;
@@ -11,7 +15,21 @@ interface ProductCardProps {
   reviewCount: number;
 }
 
-const ProductCard = ({ image, title, price, originalPrice, rating, reviewCount }: ProductCardProps) => {
+const ProductCard = ({ id, image, title, price, originalPrice, rating, reviewCount }: ProductCardProps) => {
+  const { addToCart } = useCart();
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  const handleAddToCart = () => {
+    if (!user) {
+      navigate('/auth');
+      return;
+    }
+    
+    if (id) {
+      addToCart(id);
+    }
+  };
   return (
     <Card className="group hover:shadow-lg transition-all duration-200 bg-gradient-card border-border">
       <CardContent className="p-4">
@@ -52,7 +70,7 @@ const ProductCard = ({ image, title, price, originalPrice, rating, reviewCount }
       </CardContent>
       
       <CardFooter className="p-4 pt-0">
-        <Button className="w-full" size="sm">
+        <Button className="w-full" size="sm" onClick={handleAddToCart}>
           Add to Cart
         </Button>
       </CardFooter>

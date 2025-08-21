@@ -1,15 +1,54 @@
+import { useEffect, useState } from "react";
 import { MessageSquare, ShoppingBag, Sparkles, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import Header from "@/components/Header";
 import ProductCard from "@/components/ProductCard";
 import ChatInterface from "@/components/ChatInterface";
+import { useAuth } from "@/hooks/useAuth";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 import heroImage from "@/assets/hero-image.jpg";
 import productPhone from "@/assets/product-phone.jpg";
 import productHeadphones from "@/assets/product-headphones.jpg";
 import productOfficeChair from "/lovable-uploads/c14ed6f6-a0b8-4b1d-a0c8-6477a3e756eb.png";
 
 const Index = () => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const [products, setProducts] = useState<any[]>([]);
+
+  const handleGetStarted = () => {
+    if (user) {
+      // Scroll to chat section
+      document.getElementById('chat-section')?.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      navigate('/auth');
+    }
+  };
+
+  const handleLearnMore = () => {
+    // Scroll to features section
+    document.getElementById('features-section')?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const { data } = await supabase
+          .from('products')
+          .select('*')
+          .eq('is_active', true)
+          .limit(3);
+        
+        setProducts(data || []);
+      } catch (error) {
+        console.error('Error fetching products:', error);
+      }
+    };
+
+    fetchProducts();
+  }, []);
   const featuredProducts = [
     {
       image: productPhone,
@@ -78,10 +117,10 @@ const Index = () => {
                 Let our AI help you shop smarter, not harder.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
-                <Button size="lg" variant="cart">
+                <Button size="lg" variant="cart" onClick={handleGetStarted}>
                   Start Shopping Now
                 </Button>
-                <Button size="lg" variant="outline">
+                <Button size="lg" variant="outline" onClick={handleLearnMore}>
                   See How It Works
                 </Button>
               </div>
@@ -99,7 +138,7 @@ const Index = () => {
       </section>
 
       {/* Features Section */}
-      <section className="py-20">
+      <section id="features-section" className="py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl lg:text-4xl font-bold text-foreground mb-4">
@@ -129,7 +168,7 @@ const Index = () => {
       </section>
 
       {/* Chat & Products Section */}
-      <section className="py-20 bg-muted/20">
+      <section id="chat-section" className="py-20 bg-muted/20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             {/* Chat Interface */}
@@ -152,9 +191,25 @@ const Index = () => {
                 Popular items recommended by our AI based on current trends.
               </p>
               <div className="space-y-6">
-                {featuredProducts.map((product, index) => (
-                  <ProductCard key={index} {...product} />
-                ))}
+                {products.length > 0 ? (
+                  products.map((product) => (
+                    <ProductCard
+                      key={product.id}
+                      id={product.id}
+                      image={product.image_url}
+                      title={product.name}
+                      price={`$${product.price}`}
+                      originalPrice={product.original_price ? `$${product.original_price}` : undefined}
+                      rating={product.rating || 0}
+                      reviewCount={product.review_count || 0}
+                    />
+                  ))
+                ) : (
+                  // Fallback to static products if none loaded
+                  featuredProducts.map((product, index) => (
+                    <ProductCard key={index} {...product} />
+                  ))
+                )}
               </div>
             </div>
           </div>
@@ -170,7 +225,7 @@ const Index = () => {
           <p className="text-xl text-muted-foreground mb-8">
             Join thousands of satisfied customers who shop smarter with AI assistance.
           </p>
-          <Button size="lg" variant="cart" className="text-lg px-8 py-3">
+          <Button size="lg" variant="cart" className="text-lg px-8 py-3" onClick={handleGetStarted}>
             Get Started Today
           </Button>
         </div>
