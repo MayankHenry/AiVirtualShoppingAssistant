@@ -7,7 +7,7 @@ import ChatInterface from "@/components/ChatInterface";
 import heroImage from "@/assets/hero-image.jpg";
 import productPhone from "@/assets/product-phone.jpg";
 import productHeadphones from "@/assets/product-headphones.jpg";
-import productLaptop from "@/assets/product-laptop.jpg";
+import productOfficeChair from "/lovable-uploads/c14ed6f6-a0b8-4b1d-a0c8-6477a3e756eb.png";
 
 const Index = () => {
   const featuredProducts = [
@@ -28,11 +28,12 @@ const Index = () => {
       reviewCount: 892,
     },
     {
-      image: productLaptop,
-      title: "Ultra-thin Laptop - Perfect for Work and Gaming",
-      price: "$1,299.99",
-      rating: 4.9,
-      reviewCount: 543,
+      image: productOfficeChair,
+      title: "Premium Ergonomic Office Chair - Professional Comfort",
+      price: "$799.99",
+      originalPrice: "$999.99",
+      rating: 4.7,
+      reviewCount: 324,
     },
   ];
 

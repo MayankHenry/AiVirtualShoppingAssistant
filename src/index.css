@@ -18,8 +18,8 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 15%;
     
-    /* Amazon-inspired orange accent */
-    --primary: 37 92% 52%;
+    /* Modern light blue accent */
+    --primary: 200 90% 60%;
     --primary-foreground: 0 0% 100%;
     
     /* Subtle grays */
@@ -37,7 +37,7 @@ All colors MUST be HSL.
     
     --border: 0 0% 90%;
     --input: 0 0% 100%;
-    --ring: 37 92% 52%;
+    --ring: 200 90% 60%;
 
     --radius: 0.5rem;
     
