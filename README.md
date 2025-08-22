@@ -1,24 +1,97 @@
-# ShopAssist - AI Shopping Assistant
+# ShopAssist - AI-Powered E-commerce Platform
 
-A modern, intelligent shopping platform powered by AI that helps users discover and purchase products through natural conversation and smart recommendations.
+A modern, intelligent shopping platform powered by AI that helps users discover and purchase products through natural conversation and smart recommendations using the FakeStore API.
 
 ## 🚀 Features
 
-- **AI-Powered Chat Assistant**: Natural language product search and recommendations using OpenRouter API
+- **AI-Powered Search & Recommendations**: Natural language product search using DeepSeek R1 model via OpenRouter
+- **Real Product Inventory**: Integration with FakeStore API for authentic product data
+- **Dark/Light Theme**: Beautiful responsive design with theme switching
 - **User Authentication**: Secure signup/signin with Supabase Auth
-- **Product Management**: Dynamic product catalog with real-time inventory
-- **Shopping Cart**: Full cart functionality with persistent state
-- **Responsive Design**: Beautiful, modern UI with light blue theme
-- **Real-time Updates**: Live product data and cart synchronization
+- **Shopping Cart**: Full cart functionality with local storage persistence
+- **Checkout System**: Complete checkout flow (payment gateway integration ready)
+- **Account Management**: User profiles, order history, and preferences
+- **Responsive Design**: Amazon-like UI with smooth animations and hover effects
 
 ## 🛠️ Technology Stack
 
 - **Frontend**: React 18, TypeScript, Vite
-- **Styling**: Tailwind CSS, shadcn/ui components
-- **Backend**: Supabase (Database, Auth, Edge Functions)
-- **AI Integration**: OpenRouter API with Claude 3.5 Sonnet
+- **Styling**: Tailwind CSS, shadcn/ui components  
+- **Backend**: Supabase (Database, Auth)
+- **AI Integration**: OpenRouter API with DeepSeek R1 model
+- **Product Data**: FakeStore API integration
 - **State Management**: React Context API
 - **Routing**: React Router DOM
+
+## 📋 Setup Instructions
+
+1. **Environment Variables**
+   Add your API keys to `.env`:
+   ```
+   VITE_OPENROUTER_API_KEY=your-openrouter-api-key
+   VITE_FAKESTORE_API_URL=https://fakestoreapi.com
+   ```
+
+2. **Install Dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Run Development Server**
+   ```bash
+   npm run dev
+   ```
+
+## 🔧 API Configuration
+
+### OpenRouter API (Required)
+- Sign up at [OpenRouter](https://openrouter.ai)
+- Get your API key from the dashboard
+- Add it to your `.env` file
+- Uses DeepSeek R1 model for intelligent product recommendations
+
+### FakeStore API (Integrated)
+- Provides real product data for development
+- No API key required
+- Includes 20 products across 4 categories
+- Supports search and category filtering
+
+## ✨ Key Features
+
+### AI Shopping Assistant
+- Natural language product search
+- Personalized recommendations based on user queries
+- Context-aware conversations
+- Product comparison and advice
+
+### Complete E-commerce Flow
+- Product browsing with category filters
+- Shopping cart with quantity management  
+- Checkout process with form validation
+- Order history and account management
+
+### Modern UI/UX
+- Smooth hover animations and transitions
+- Dark/light theme switching
+- Responsive design for all devices
+- Amazon-inspired interface
+
+## 🎯 Usage
+
+1. **Browse Products**: Explore the product catalog with category filters
+2. **AI Chat**: Use the AI assistant for product recommendations
+3. **Add to Cart**: Add products and manage quantities
+4. **Checkout**: Complete purchase with shipping/billing info
+5. **Account**: View order history and manage profile
+
+## 🔐 Security & Authentication
+
+- Supabase authentication for secure user management
+- Local cart storage with session persistence
+- Protected routes for authenticated features
+- Secure API key management
+
+Ready to use with your OpenRouter API key! 🛍️
 
 ## 📋 Prerequisites
 

@@ -1,22 +1,25 @@
 import { useEffect, useState } from "react";
-import { MessageSquare, ShoppingBag, Sparkles, TrendingUp } from "lucide-react";
+import { MessageSquare, ShoppingBag, Sparkles, TrendingUp, Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import Header from "@/components/Header";
 import ProductCard from "@/components/ProductCard";
 import ChatInterface from "@/components/ChatInterface";
 import { useAuth } from "@/hooks/useAuth";
-import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { fakeStoreApi, Product } from "@/services/fakeStoreApi";
 import heroImage from "@/assets/hero-image.jpg";
-import productPhone from "@/assets/product-phone.jpg";
-import productHeadphones from "@/assets/product-headphones.jpg";
-import productOfficeChair from "/lovable-uploads/c14ed6f6-a0b8-4b1d-a0c8-6477a3e756eb.png";
 
 const Index = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [products, setProducts] = useState<any[]>([]);
+  const [searchParams] = useSearchParams();
+  const [products, setProducts] = useState<Product[]>([]);
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<string[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [loading, setLoading] = useState(true);
 
   const handleGetStarted = () => {
     if (user) {
@@ -34,47 +37,44 @@ const Index = () => {
 
   useEffect(() => {
     const fetchProducts = async () => {
+      setLoading(true);
       try {
-        const { data } = await supabase
-          .from('products')
-          .select('*')
-          .eq('is_active', true)
-          .limit(3);
+        const [allProducts, allCategories] = await Promise.all([
+          fakeStoreApi.getAllProducts(),
+          fakeStoreApi.getCategories()
+        ]);
         
-        setProducts(data || []);
+        setProducts(allProducts);
+        setCategories(allCategories);
+        setFilteredProducts(allProducts);
+
+        // Handle search from URL params
+        const searchQuery = searchParams.get('search');
+        if (searchQuery) {
+          const searchResults = await fakeStoreApi.searchProducts(searchQuery);
+          setFilteredProducts(searchResults);
+        }
       } catch (error) {
         console.error('Error fetching products:', error);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchProducts();
-  }, []);
-  const featuredProducts = [
-    {
-      image: productPhone,
-      title: "Premium Smartphone - Latest Model with Advanced Camera",
-      price: "$899.99",
-      originalPrice: "$1,199.99",
-      rating: 4.8,
-      reviewCount: 1247,
-    },
-    {
-      image: productHeadphones,
-      title: "Wireless Noise-Cancelling Headphones",
-      price: "$299.99",
-      originalPrice: "$399.99",
-      rating: 4.6,
-      reviewCount: 892,
-    },
-    {
-      image: productOfficeChair,
-      title: "Premium Ergonomic Office Chair - Professional Comfort",
-      price: "$799.99",
-      originalPrice: "$999.99",
-      rating: 4.7,
-      reviewCount: 324,
-    },
-  ];
+  }, [searchParams]);
+
+  useEffect(() => {
+    // Filter products based on selected category
+    if (selectedCategory === 'all') {
+      setFilteredProducts(products);
+    } else {
+      setFilteredProducts(products.filter(product => product.category === selectedCategory));
+    }
+  }, [selectedCategory, products]);
+  const searchQuery = searchParams.get('search');
+  const isSearchResults = Boolean(searchQuery);
+  const displayProducts = filteredProducts.slice(0, isSearchResults ? 12 : 8);
 
   const features = [
     {
@@ -167,52 +167,106 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Chat & Products Section */}
-      <section id="chat-section" className="py-20 bg-muted/20">
+      {/* Search Results or Products Section */}
+      <section id="products-section" className="py-20 bg-muted/20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-            {/* Chat Interface */}
+          {isSearchResults ? (
             <div>
               <h2 className="text-3xl font-bold text-foreground mb-6">
-                Try Our AI Assistant
+                Search Results for "{searchQuery}"
               </h2>
-              <p className="text-muted-foreground mb-6">
-                Start a conversation with our AI to get personalized product recommendations.
+              <p className="text-muted-foreground mb-8">
+                Found {filteredProducts.length} products matching your search
               </p>
-              <ChatInterface />
             </div>
-            
-            {/* Featured Products */}
-            <div>
-              <h2 className="text-3xl font-bold text-foreground mb-6">
-                Featured Products
-              </h2>
-              <p className="text-muted-foreground mb-6">
-                Popular items recommended by our AI based on current trends.
-              </p>
+          ) : (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-12">
+              {/* Chat Interface */}
+              <div>
+                <h2 className="text-3xl font-bold text-foreground mb-6">
+                  Try Our AI Assistant
+                </h2>
+                <p className="text-muted-foreground mb-6">
+                  Start a conversation with our AI to get personalized product recommendations.
+                </p>
+                <ChatInterface />
+              </div>
+              
+              {/* Quick Stats */}
               <div className="space-y-6">
-                {products.length > 0 ? (
-                  products.map((product) => (
-                    <ProductCard
-                      key={product.id}
-                      id={product.id}
-                      image={product.image_url}
-                      title={product.name}
-                      price={`$${product.price}`}
-                      originalPrice={product.original_price ? `$${product.original_price}` : undefined}
-                      rating={product.rating || 0}
-                      reviewCount={product.review_count || 0}
-                    />
-                  ))
-                ) : (
-                  // Fallback to static products if none loaded
-                  featuredProducts.map((product, index) => (
-                    <ProductCard key={index} {...product} />
-                  ))
-                )}
+                <h2 className="text-3xl font-bold text-foreground mb-6">
+                  Discover Products
+                </h2>
+                <div className="grid grid-cols-2 gap-4">
+                  <Card className="hover:shadow-lg transition-shadow">
+                    <CardContent className="p-4 text-center">
+                      <div className="text-2xl font-bold text-primary">{products.length}</div>
+                      <div className="text-sm text-muted-foreground">Products Available</div>
+                    </CardContent>
+                  </Card>
+                  <Card className="hover:shadow-lg transition-shadow">
+                    <CardContent className="p-4 text-center">
+                      <div className="text-2xl font-bold text-primary">{categories.length}</div>
+                      <div className="text-sm text-muted-foreground">Categories</div>
+                    </CardContent>
+                  </Card>
+                </div>
               </div>
             </div>
+          )}
+
+          {/* Category Filter */}
+          <div className="flex items-center gap-4 mb-8">
+            <Filter className="h-5 w-5 text-muted-foreground" />
+            <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+              <SelectTrigger className="w-48">
+                <SelectValue placeholder="Filter by category" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Categories</SelectItem>
+                {categories.map((category) => (
+                  <SelectItem key={category} value={category}>
+                    {category.charAt(0).toUpperCase() + category.slice(1)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
+
+          {/* Products Grid */}
+          {loading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {[...Array(8)].map((_, i) => (
+                <Card key={i} className="animate-pulse">
+                  <CardContent className="p-6">
+                    <div className="aspect-square bg-muted rounded-lg mb-4"></div>
+                    <div className="space-y-2">
+                      <div className="h-4 bg-muted rounded"></div>
+                      <div className="h-4 bg-muted rounded w-3/4"></div>
+                      <div className="h-6 bg-muted rounded w-1/2"></div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {displayProducts.map((product) => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                />
+              ))}
+            </div>
+          )}
+
+          {!loading && filteredProducts.length === 0 && (
+            <div className="text-center py-12">
+              <ShoppingBag className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+              <h3 className="text-xl font-semibold mb-2">No products found</h3>
+              <p className="text-muted-foreground">Try adjusting your search or filter criteria</p>
+            </div>
+          )}
         </div>
       </section>
 
