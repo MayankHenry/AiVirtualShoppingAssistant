@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { User, Package, Settings, Heart, LogOut, Mail, Phone, MapPin } from 'lucide-react';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -190,31 +191,33 @@ const Account = () => {
                 <CardTitle>Order History</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  {orderHistory.map((order) => (
-                    <div key={order.id} className="border rounded-lg p-4 hover:bg-muted/50 transition-colors">
-                      <div className="flex justify-between items-start mb-3">
-                        <div>
-                          <h3 className="font-semibold">Order {order.id}</h3>
-                          <p className="text-sm text-muted-foreground">Placed on {order.date}</p>
-                        </div>
-                        <div className="text-right">
-                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(order.status)}`}>
-                            {order.status}
-                          </span>
-                          <p className="font-bold mt-1">${order.total.toFixed(2)}</p>
-                        </div>
-                      </div>
-                      <div className="space-y-1">
-                        {order.items.map((item, index) => (
-                          <div key={index} className="text-sm text-muted-foreground">
-                            {item.quantity}x {item.name} - ${item.price.toFixed(2)}
+                <ScrollArea className="h-[400px]">
+                  <div className="space-y-4">
+                    {orderHistory.map((order) => (
+                      <div key={order.id} className="border rounded-lg p-4 hover:bg-muted/50 transition-colors">
+                        <div className="flex justify-between items-start mb-3">
+                          <div>
+                            <h3 className="font-semibold">Order {order.id}</h3>
+                            <p className="text-sm text-muted-foreground">Placed on {order.date}</p>
                           </div>
-                        ))}
+                          <div className="text-right">
+                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(order.status)}`}>
+                              {order.status}
+                            </span>
+                            <p className="font-bold mt-1">${order.total.toFixed(2)}</p>
+                          </div>
+                        </div>
+                        <div className="space-y-1">
+                          {order.items.map((item, index) => (
+                            <div key={index} className="text-sm text-muted-foreground">
+                              {item.quantity}x {item.name} - ${item.price.toFixed(2)}
+                            </div>
+                          ))}
+                        </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                </ScrollArea>
               </CardContent>
             </Card>
           </TabsContent>

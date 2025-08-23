@@ -11,6 +11,7 @@ import Auth from "./pages/Auth";
 import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
 import Account from "./pages/Account";
+import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -25,14 +26,15 @@ function App() {
           <BrowserRouter>
             <AuthProvider>
               <LocalCartProvider>
-                <Routes>
-                  <Route path="/" element={<Index />} />
-                  <Route path="/auth" element={<Auth />} />
-                  <Route path="/cart" element={<Cart />} />
-                  <Route path="/checkout" element={<Checkout />} />
-                  <Route path="/account" element={<Account />} />
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
+        <Routes>
+          <Route path="/" element={<Index />} />
+          <Route path="/auth" element={<Auth />} />
+          <Route path="/cart" element={<Cart />} />
+          <Route path="/checkout" element={<Checkout />} />
+          <Route path="/account" element={<Account />} />
+          <Route path="/admin" element={<Admin />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
               </LocalCartProvider>
             </AuthProvider>
           </BrowserRouter>

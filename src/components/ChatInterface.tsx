@@ -88,7 +88,7 @@ const ChatInterface = () => {
 
   return (
     <Card className="h-[600px] flex flex-col bg-gradient-card border-border hover:shadow-lg transition-shadow">
-      <CardHeader className="border-b border-border">
+      <CardHeader className="border-b border-border flex-shrink-0">
         <CardTitle className="flex items-center gap-2">
           <Bot className="h-5 w-5 text-primary" />
           AI Shopping Assistant
@@ -96,9 +96,9 @@ const ChatInterface = () => {
         </CardTitle>
       </CardHeader>
       
-      <CardContent className="flex-1 p-0">
-        <ScrollArea className="h-full p-4">
-          <div className="space-y-4">
+      <CardContent className="flex-1 p-0 overflow-hidden">
+        <ScrollArea className="h-full">
+          <div className="p-4 space-y-4">
             {messages.map((message) => (
               <div
                 key={message.id}
@@ -119,7 +119,7 @@ const ChatInterface = () => {
                       : "bg-primary text-primary-foreground ml-auto"
                   }`}
                 >
-                  <p className="text-sm">{message.text}</p>
+                  <p className="text-sm whitespace-pre-wrap break-words">{message.text}</p>
                 </div>
                 
                 {!message.isBot && (
@@ -133,7 +133,7 @@ const ChatInterface = () => {
         </ScrollArea>
       </CardContent>
       
-      <div className="p-4 border-t border-border">
+      <div className="p-4 border-t border-border flex-shrink-0">
         <div className="flex gap-2">
           <Input
             value={inputValue}
